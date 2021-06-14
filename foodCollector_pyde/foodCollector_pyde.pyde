@@ -10,14 +10,12 @@ def setup():
     
     size(640, 360)
     v = Vehicle(width / 2, height / 2)
-    velocity = PVector(0, 0)
-    f = Food(random(d * 2, width - d * 2), random(d * 2, height - d * 2), velocity)
+    f = Food(random(d * 2, width - d * 2), random(d * 2, height - d * 2))
 
 def updateCounter():
     texto = "Food: " + str(foodCounter)
     textSize(32);
     text(texto, d / 2, d); 
-    fill(0, 102, 153);
 
 def draw():
     global foodCounter
@@ -27,8 +25,6 @@ def draw():
     noFill()
     rectMode(CENTER)
     rect(width / 2, height / 2, width - d, height - d)
-    
-    #v.boundaries(d)
 
     v.arrive(f.position)
     

@@ -25,43 +25,6 @@ class Vehicle():
     def applyForce(self, force):
         # We could add mass here if we want A = F / M
         self.acceleration.add(force)
-
-    # A method that calculates a steering force towards a target
-    # STEER = DESIRED MINUS VELOCITY
-    def boundaries(self, d):
-
-        desired = None
-
-        if self.position.x < d:
-            desired = PVector(self.maxspeed, self.velocity.y)
-        elif self.position.x > width - d:
-            desired = PVector(-self.maxspeed, self.velocity.y)
-
-        if self.position.y < d:
-            desired = PVector(self.velocity.x, self.maxspeed)
-        elif self.position.y > height - d:
-            desired = PVector(self.velocity.x, -self.maxspeed)
-
-        if desired:
-            desired.normalize()
-            desired.mult(self.maxspeed)
-            steer = desired - self.velocity
-            steer.limit(self.maxforce)
-            self.applyForce(steer)
-            
-    # A method that calculates a steering force towards a target
-    # STEER = DESIRED MINUS VELOCITY
-    def seek(self, target):
-
-        # A vector pointing from the location to the target
-        desired = target - self.position
-
-        # Scale to maximum speed
-        desired.setMag(self.maxspeed)
-
-        steer = desired - self.velocity
-        steer.limit(self.maxforce)  # Limit to maximum steering forceo       
-        self.applyForce(steer)
         
     # A method that calculates a steering force towards a target
     # STEER = DESIRED MINUS VELOCITY
