@@ -26,24 +26,19 @@ class Vehicle {
   }
   
   arrive(target) {
-    let desired = createVector(target.x, target.y);
-    desired.sub(this.position);
-    let d = mag(desired);
+    let desired = p5.Vector.sub(target, this.position);
+    let d = desired.mag();
+    desired.normalize();
     
-    if (d < 100){
+    if (d < 100) { 
       let m = map(d, 0, 100, 0, this.maxspeed);
-      desired.setMag(m);
+      desired.mult(m);
+    } else { 
+      desired.mult(this.maxspeed);
     }
-    else {
-      desired.setMag(this.maxspeed);
-    }
-    let aux = desired.sub(self.velocity);
-    let steer = createVector(aux.x, aux.y);
-    steer.limit(this.maxforce);
     
-    console.log(desired);
-    console.log(this.velocity);
-
+    let steer = p5.Vector.sub(desired, this.velocity);
+    steer.limit(this.maxforce);
     this.applyForce(steer);
   }
  
