@@ -19,6 +19,14 @@ Grid.prototype.generate = function() {
   }
 };
 
+Grid.prototype.clean = function() {
+  for (let i = 0; i < this.rows; ++i) {
+    for (let j = 0 ; j < this.columns; ++j) {
+      this.cells[i][j].cor = this.cells[i][j].kind;
+    }
+  }
+};
+
 Grid.prototype.draw = function() {
   for (let i = 0; i < this.rows; ++i) {
     for (let j = 0; j < this.columns; ++j) {

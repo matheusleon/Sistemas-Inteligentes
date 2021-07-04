@@ -74,6 +74,17 @@ function fetchNextCells(cell) {
         cells.push([nextCell, totalWeight]);
       }
     }
+  } else if (activeAlgorithm == 'Guloso') {
+    for (let i = 0; i < graph[cell.x][cell.y].length; ++i) {
+      let nextCell = graph[cell.x][cell.y][i][0];
+      let weight = graph[cell.x][cell.y][i][1];
+      if (!visited[nextCell.x][nextCell.y]) {
+        beforeOnPath[nextCell.x][nextCell.y] = createVector(cell.x, cell.y);
+        visited[nextCell.x][nextCell.y] = true;
+        //cells.push([nextCell, dist2[nextCell.x][nextCell.y]]);
+        cells.push([nextCell, food.position.dist(createVector(nextCell.x, nextCell.y))]);
+      }
+    }
   } else if (activeAlgorithm == 'DFS') {
     visited[cell.x][cell.y] = true;
     for (let i = 0; i < graph[cell.x][cell.y].length; ++i) {
@@ -93,7 +104,7 @@ function fetchNextToVisit() {
     let cell = queue[queueIndex][0];
     queueIndex += 1;
     return cell;
-  } else if (activeAlgorithm == 'Dijkstra' || activeAlgorithm == 'A*') {
+  } else if (activeAlgorithm == 'Dijkstra' || activeAlgorithm == 'A*' || activeAlgorithm == 'Guloso') {
     let minDist = 123456789;
     let chosenCell = null;
     for (let i = 0; i < queue.length; ++i) {

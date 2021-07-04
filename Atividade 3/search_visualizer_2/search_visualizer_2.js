@@ -20,20 +20,25 @@ function setup() {
   button.position(111, 20);
   button.mousePressed(runDijkstra);
   
-  button = createButton('A*');
+  button = createButton('Guloso');
   button.position(174, 20);
+  button.mousePressed(runDijkstra);
+  
+  button = createButton('A*');
+  button.position(235, 20);
   button.mousePressed(runAStar);
   
   button = createButton('Reset');
-  button.position(207, 20);
+  button.position(268, 20);
   button.mousePressed(reset);
   
   
   do {
     // ENTITIES
-    player = new Player();
     grid = new Grid(GRID_ROWS, GRID_COLUMNS);
     grid.generate();
+    
+    player = new Player();
     player.spawn();
     food = new Food();
     food.spawn();
@@ -62,6 +67,8 @@ function setup() {
   // ALGORITHM CONTROLLER
   activeAlgorithm = null;
   
+  foodCounter = 0;
+  
   grid.draw();
   player.draw();
   food.draw();
@@ -83,6 +90,7 @@ function draw() {
       visitingCells = false;
       pathToFood = buildPathToFood();
       highlightPath = true;
+      pathToFoodIndex = 0;
     } else {
       let nextCells = fetchNextCells(currentCell, activeAlgorithm);
       for (let i = 0; i < nextCells.length; i++) {
@@ -102,27 +110,38 @@ function draw() {
     }
   } else if (followPath) {
     if (pathToFoodIndex < pathToFood.length) {
-      let nextCell = pathToFood[pathToFoodIndex];
-      let nextCellPixelPos = getCellPixelMapping(nextCell);
-      player.arrive(nextCellPixelPos);
-      player.run();
-      if (player.pixelPos.dist(nextCellPixelPos) < 7) {
-        let startIdx = pathToFoodIndex;
-        while (pathToFoodIndex + 1 < pathToFood.length) {
-          if (!(pathToFood[pathToFoodIndex + 1].x == pathToFood[startIdx].x || pathToFood[pathToFoodIndex + 1].y == pathToFood[startIdx].y)) {
-            break;
+      if (player.pixelPos.dist(getCellPixelMapping(food.position)) < 3) {
+        reset();
+        followPath = false;
+        foodCounter = foodCounter + 1;
+      } else {
+        let nextCell = pathToFood[pathToFoodIndex];
+        let nextCellPixelPos = getCellPixelMapping(nextCell);
+        player.arrive(nextCellPixelPos);
+        player.run();
+        if (player.pixelPos.dist(nextCellPixelPos) < 7) {
+          let startIdx = pathToFoodIndex;
+          while (pathToFoodIndex + 1 < pathToFood.length) {
+            if (!(pathToFood[pathToFoodIndex + 1].x == pathToFood[startIdx].x || pathToFood[pathToFoodIndex + 1].y == pathToFood[startIdx].y)) {
+              break;
+            }
+            pathToFoodIndex += 1;
           }
-          pathToFoodIndex += 1;
         }
       }
     } else {
       followPath = false;
-      entrypoint = true;
+      entrypoint = false;
+      reset();
     }
   }
+
+ 
+  background(255);
   grid.draw();
   player.draw();
   food.draw();
+  updateCounter();
   /*
   player.arrive(food.getPos());
   player.run();
@@ -130,13 +149,36 @@ function draw() {
   */
 }
 
+function updateCounter() { 
+  texto = "Food: " + foodCounter;
+  textSize(32);
+  text(texto, 800, 110); 
+}
+
 function reset() {
-  entrypoint = true;
+  // entrypoint = true;
+  visitingCells = true;
+  
+  grid.clean();
   grid.draw();
+  
+  player.position = food.position;
   player.draw();
   food = new Food();
   food.spawn();
   food.draw();
+  
+  if (activeAlgorithm == 'BFS') {
+    runBFS();
+  } else if (activeAlgorithm == 'DFS') {
+    runDFS();
+  } else if (activeAlgorithm == 'Dijkstra') {
+    runDijkstra();
+  } else if (activeAlgorithm == 'Guloso') {
+    runGuloso();
+  } else if (activeAlgorithm == 'A*') {
+    runAStar();
+  }
 }
 
 function initializeGraph() {
@@ -246,6 +288,16 @@ function runDijkstra() {
   queue = [];
   queue.push([player.position, 0]);
   dist[player.position.x][player.position.y] = 0;
+  entrypoint = false;
+  visitingCells = true;
+}
+
+function runGuloso() {
+  console.log('Running Guloso');
+  initializeVisited();
+  activeAlgorithm = "Guloso";
+  queue = [];
+  queue.push([player.position, dist2[player.position.x][player.position.y]]);
   entrypoint = false;
   visitingCells = true;
 }
