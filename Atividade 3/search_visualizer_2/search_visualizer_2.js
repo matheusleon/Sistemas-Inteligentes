@@ -75,9 +75,7 @@ function draw() {
     
   } else if (visitingCells) {
     // console.log("visitando");
-    console.log("Minha fila: ", queue, queue.len);
     let currentCell = fetchNextToVisit();
-    console.log("Celula escolhida: ", currentCell);
     if (currentCell.x != player.position.x || currentCell.y != player.position.y) {
       grid.cells[currentCell.x][currentCell.y].cor = getVisitedCellColor(currentCell);
     }
@@ -106,7 +104,6 @@ function draw() {
   } else if (followPath) {
     if (pathToFoodIndex < pathToFood.length) {
       if (player.pixelPos.dist(getCellPixelMapping(food.position)) < 3) {
-        reset();
         followPath = false;
         foodCounter = foodCounter + 1;
       } else {
@@ -149,7 +146,6 @@ function updateCounter() {
 }
 
 function reset() {
-  followPath = false;
   entrypoint = true;
   
   grid.clean();
