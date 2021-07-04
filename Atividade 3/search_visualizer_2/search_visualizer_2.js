@@ -28,11 +28,6 @@ function setup() {
   button.position(235, 20);
   button.mousePressed(runAStar);
   
-  button = createButton('Reset');
-  button.position(268, 20);
-  button.mousePressed(reset);
-  
-  
   do {
     // ENTITIES
     grid = new Grid(GRID_ROWS, GRID_COLUMNS);
@@ -77,12 +72,12 @@ function setup() {
 function draw() {
   if (entrypoint) {
     // console.log("entrada");
-    visitingCells = false;
-    highlightPath = false;
     
   } else if (visitingCells) {
     // console.log("visitando");
+    console.log("Minha fila: ", queue, queue.len);
     let currentCell = fetchNextToVisit();
+    console.log("Celula escolhida: ", currentCell);
     if (currentCell.x != player.position.x || currentCell.y != player.position.y) {
       grid.cells[currentCell.x][currentCell.y].cor = getVisitedCellColor(currentCell);
     }
@@ -130,8 +125,6 @@ function draw() {
         }
       }
     } else {
-      followPath = false;
-      entrypoint = false;
       reset();
     }
   }
@@ -156,8 +149,8 @@ function updateCounter() {
 }
 
 function reset() {
-  // entrypoint = true;
-  visitingCells = true;
+  followPath = false;
+  entrypoint = true;
   
   grid.clean();
   grid.draw();
@@ -167,6 +160,11 @@ function reset() {
   food = new Food();
   food.spawn();
   food.draw();
+  
+  queue = [];
+  queueIndex = 0;
+  
+  initializeVisited();
   
   if (activeAlgorithm == 'BFS') {
     runBFS();
@@ -257,16 +255,15 @@ function validGraph() {
       }
     }
   }
-  return (visited[food.position.x][food.position.y]);
+  return visited[food.position.x][food.position.y];
 }
 
 function runBFS() {
   console.log('Running BFS');
-  initializeVisited();
   activeAlgorithm = 'BFS';
-  queue = [];
+  initializeVisited();
   queue.push([player.position, 0]);
-  dist[player.position.x][player.position.y] = 0;  
+  dist[player.position.x][player.position.y] = 0;
   entrypoint = false;
   visitingCells = true;
 }
@@ -275,7 +272,6 @@ function runDFS() {
   console.log('Running DFS');
   initializeVisited();
   activeAlgorithm = 'DFS';
-  queue = [];
   queue.push([player.position, 0]);
   entrypoint = false;
   visitingCells = true;
@@ -283,9 +279,7 @@ function runDFS() {
 
 function runDijkstra() {
   console.log('Running Dijkstra');
-  initializeVisited();
   activeAlgorithm = "Dijkstra";
-  queue = [];
   queue.push([player.position, 0]);
   dist[player.position.x][player.position.y] = 0;
   entrypoint = false;
@@ -294,9 +288,7 @@ function runDijkstra() {
 
 function runGuloso() {
   console.log('Running Guloso');
-  initializeVisited();
   activeAlgorithm = "Guloso";
-  queue = [];
   queue.push([player.position, dist2[player.position.x][player.position.y]]);
   entrypoint = false;
   visitingCells = true;
@@ -304,9 +296,7 @@ function runGuloso() {
 
 function runAStar() {
   console.log('Running A*');
-  initializeVisited();
   activeAlgorithm = "A*";
-  queue = [];
   queue.push([player.position, 0]);
   dist[player.position.x][player.position.y] = dist2[player.position.x][player.position.y];
   entrypoint = false;
