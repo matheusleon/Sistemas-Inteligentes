@@ -58,6 +58,7 @@ function setup() {
   entrypoint = true;
   visitingCells = false;
   highlightPath = false;
+  resetaGrid = false;
   
   // ALGORITHM CONTROLLER
   activeAlgorithm = null;
@@ -105,6 +106,7 @@ function draw() {
     if (pathToFoodIndex < pathToFood.length) {
       if (player.pixelPos.dist(getCellPixelMapping(food.position)) < 3) {
         followPath = false;
+        resetaGrid = true;
         foodCounter = foodCounter + 1;
       } else {
         let nextCell = pathToFood[pathToFoodIndex];
@@ -122,7 +124,7 @@ function draw() {
         }
       }
     }
-  } else {
+  } else if (resetaGrid) {
     reset();
   }
 
@@ -146,6 +148,7 @@ function updateCounter() {
 }
 
 function reset() {
+  resetaGrid = false;
   entrypoint = true;
   
   grid.clean();
